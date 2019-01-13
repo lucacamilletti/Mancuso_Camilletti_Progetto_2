@@ -1,72 +1,75 @@
-from priorityQueue.PQbinomialHeap import PQbinomialHeap
 from graph.graph.Graph_AdjacencyList import GraphAdjacencyList
+from priorityQueue.PQbinomialHeap import PQbinomialHeap
+from priorityQueue.PQ_Dheap import PQ_DHeap
+from priorityQueue.PQbinaryHeap import PQbinaryHeap
+import random
 
-def PriorityVisit(graph):
-    vMax = graph.getMaxWeightNode()
-    vertexSet = PQbinomialHeap()  # nodes to explore
-    vertexSet.insert(vMax.getId(), vMax.getWeight())
-    markedNodes = {vMax.getId()}  # nodes already explored
+
+def priorityVisit(graph):
+    verticeMax = graph.getNodeMaxWeight()
+    priorityQueue = PQbinomialHeap()
+    priorityQueue.insert(verticeMax.getId(), verticeMax.getWeight())
+    markedNodes = [verticeMax.getId()]
     list = []
 
-
-    while not vertexSet.isEmpty():
-        IdNode = vertexSet.findMax()
-        list.append(IdNode)
-        vertexSet.deleteMax()
-        adjNodes = graph.getAdj(IdNode)
-        for nodeIndex in adjNodes:
+    while not priorityQueue.isEmpty():
+        idNode = priorityQueue.findMax()
+        list.append(idNode)
+    #   print("id: ", idNode)
+    #   print("peso: ", graph.getNode(idNode).getWeight(), "\n\n")
+        priorityQueue.deleteMax()
+        adjacentNodes = graph.getAdj(idNode)
+        for nodeIndex in adjacentNodes:
             if nodeIndex not in markedNodes:
-                Node = graph.getNode(nodeIndex)
-                vertexSet.insert(Node.getId(), Node.getWeight())
-                markedNodes.add(nodeIndex)
+                node = graph.getNode(nodeIndex)
+                priorityQueue.insert(node.getId(), node.getWeight())
+                markedNodes.append(nodeIndex)
+    print(len(list))
     return list
 
-def graphGenerator():
+def graphGenerator(numberOfNodes):
     graph = GraphAdjacencyList()
 
-    nodes = []
-    node = graph.addNode(2, 81)
-    nodes.append(node)
-    node = graph.addNode(4, 22)
-    nodes.append(node)
-    node = graph.addNode(6, 12)
-    nodes.append(node)
-    node = graph.addNode(8, 32)
-    nodes.append(node)
-    node = graph.addNode(10, 26)
-    nodes.append(node)
-    node = graph.addNode(12, 14)
-    nodes.append(node)
-    node = graph.addNode(14, 40)
-    nodes.append(node)
-    node = graph.addNode(16, 7)
-    nodes.append(node)
-    node = graph.addNode(18, 6)
-    nodes.append(node)
-    node = graph.addNode(20, 4)
-    nodes.append(node)
+    for i in range(numberOfNodes):
+        weight = random.randint(0, 100)
+        graph.addNode(i, weight)
 
+    nodes = graph.getNodes().copy()
 
+    n = numberOfNodes
+    startNode = random.randint(0, n - 1)
+    startNode = nodes.pop(startNode).getId()
+    n -= 1
+    for i in range(n):
+        node = random.randint(0, n - 1 - i)
+        node = nodes.pop(node).getId()
+        graph.insertEdge(startNode, node)
+        startNode = node
 
-    graph.insertEdge(nodes[7].getId(), nodes[4].getId())
-    graph.insertEdge(nodes[7].getId(), nodes[2].getId())
-    graph.insertEdge(nodes[2].getId(), nodes[4].getId())
-    graph.insertEdge(nodes[2].getId(), nodes[3].getId())
-    graph.insertEdge(nodes[2].getId(), nodes[5].getId())
-    graph.insertEdge(nodes[3].getId(), nodes[5].getId())
-    graph.insertEdge(nodes[6].getId(), nodes[5].getId())
-    graph.insertEdge(nodes[6].getId(), nodes[8].getId())
-    graph.insertEdge(nodes[0].getId(), nodes[8].getId())
-    graph.insertEdge(nodes[0].getId(), nodes[2].getId())
-    graph.insertEdge(nodes[0].getId(), nodes[1].getId())
-    graph.insertEdge(nodes[0].getId(), nodes[9].getId())
-    graph.insertEdge(nodes[1].getId(), nodes[9].getId())
+    k = random.randint(1, int(numberOfNodes / 2) + 1)
 
+    for i in range(k):
+        n = numberOfNodes
+        nodes = graph.getNodes().copy()
+
+        node1 = nodes.pop(random.randint(0, n - 1)).getId()
+        while(len(graph.getAdj(node1)) == numberOfNodes - 1):
+            nodes.append(node1)
+            node1 = nodes.pop(random.randint(0, n - 1)).getId()
+        n -= 1
+
+        node2 = nodes.pop(random.randint(0, n - 1)).getId()
+        n -= 1
+        while(graph.isAdj(node1, node2)):
+            node2 = nodes.pop(random.randint(0, n - 1)).getId()
+            n -= 1
+
+        graph.insertEdge(node1, node2)
+    #print("Numero Archi:", len(graph.getEdges()))
     graph.print()
-
     return graph
 
+
 if __name__ == "__main__":
-    grafo = graphGenerator()
-    visita = PriorityVisit(grafo)
-    print(visita)
+
+    graphGenerator(90000)

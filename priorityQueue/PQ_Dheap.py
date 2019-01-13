@@ -45,7 +45,7 @@ class PQ_DHeap:
         if son.index <= 0:
             return
         father = self.heap[(son.index - 1) // self.d]
-        while son.index > 0 and son.key < father.key:
+        while son.index > 0 and son.key < father.key:       # questo da cambiare
             self.swap(son, father)
             father = self.heap[(son.index - 1) // self.d]  # padre del padre
 
